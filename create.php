@@ -20,13 +20,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $image = $targetFile;
     }
 
-    if ($name && $price && $stock) {
-        $stmt = $pdo->prepare("INSERT INTO products (image, name, description, price, stock) VALUES (?, ?, ?, ?, ?)");
-        $stmt->execute([$image, $name, $description, $price, $stock]);
-        header("Location: index.php");
-        exit;
+    if (!preg_match("/[a-zA-Zก-๙\s]+/", $name)) {
+       $error = "Name must contain letters (not numbers only).";
+    } elseif (!empty($description) && !preg_match("/[a-zA-Zก-๙\s]+/", $description)) {
+       $error = "Description must contain letters.";
+    } elseif ($name && $price && $stock) {
+       $stmt = $pdo->prepare("INSERT INTO products (image, name, description, price, stock) VALUES (?, ?, ?, ?, ?)");
+       $stmt->execute([$image, $name, $description, $price, $stock]);
+       header("Location: index.php");
+       exit;
     } else {
-        $error = "Please fill in all required fields.";
+       $error = "Please fill in all required fields.";
     }
 }
 ?>
